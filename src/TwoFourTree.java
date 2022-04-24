@@ -35,7 +35,7 @@ public class TwoFourTree implements Dictionary {
         return (size == 0);
     }
 
-    private int FFGTET(TFNode node, Object key) {
+    private int findFirst(TFNode node, Object key) {
         int i;
         for(i = 0; i < node.getNumItems(); i++) {
             if(treeComp.isGreaterThanOrEqualTo(node.getItem(i), key)) {
@@ -45,10 +45,10 @@ public class TwoFourTree implements Dictionary {
         return i;
     }
 
-    private TFNode insertSearch(Object key) {
+    private TFNode search(Object key) {
         TFNode current = root();
         while (true) {
-            int index = FFGTET(current, key);
+            int index = findFirst(current, key);
             // This puts the new duplicate after the old duplicate
             if (treeComp.isEqual(current.getItem(index).key(), key)) {
                 index++;
@@ -68,7 +68,7 @@ public class TwoFourTree implements Dictionary {
     public Object findElement(Object key) {
         TFNode current = root();
         while (current != null) {
-            int index = FFGTET(current, key);
+            int index = findFirst(current, key);
             if (treeComp.isEqual(current.getItem(index).key(), key)) {
                 return current.getItem(index).element();
             }
@@ -83,8 +83,8 @@ public class TwoFourTree implements Dictionary {
      * @param element to be inserted
      */
     public void insertElement(Object key, Object element) {
-        TFNode insertNode = insertSearch(key);
-        int index = FFGTET(insertNode, key);
+        TFNode insertNode = search(key);
+        int index = findFirst(insertNode, key);
         insertNode.insertItem(index, new Item(key, element));
         
         // Check for overflow
