@@ -4,12 +4,12 @@
  * Title:        Term Project 2-4 Trees
  * Description:
  * Copyright:    Copyright (c) 2001
- * Company:
- * @author
+ * Company:      Cedarville University
+ * @author       Sam Davis, Sam Marshall, Willem Vandermeij
  * @version 1.0
  */
-public class TwoFourTree
-        implements Dictionary {
+
+public class TwoFourTree implements Dictionary {
 
     private Comparator treeComp;
     private int size = 0;
