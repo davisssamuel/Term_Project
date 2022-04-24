@@ -9,10 +9,6 @@
  * @version 1.0
  */
 
-
- // Here is a new comment
- //hi
-
 public class TwoFourTree implements Dictionary {
 
     private Comparator treeComp;
@@ -235,6 +231,5 @@ public class TwoFourTree implements Dictionary {
         for (int childIndex = 0; childIndex < numChildren; childIndex++) {
             checkTreeFromNode(start.getChild(childIndex));
         }
-
     }
 }
