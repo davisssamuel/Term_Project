@@ -10,6 +10,8 @@
  */
 
  // I did something
+ // Something again
+ // Hello Willem
 
 public class TwoFourTree implements Dictionary {
 
