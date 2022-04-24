@@ -9,9 +9,8 @@
  * @version 1.0
  */
 
- // I did something
- // Something again
- // Hello Willem
+
+ // Here is a new comment
 
 public class TwoFourTree implements Dictionary {
 
