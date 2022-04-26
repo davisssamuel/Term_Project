@@ -37,7 +37,7 @@ public class TwoFourTree implements Dictionary {
         return (size == 0);
     }
 
-    private int FFGTET(TFNode node, Object key) {
+    private int findFirst(TFNode node, Object key) {
         int i;
         for(i = 0; i < node.getNumItems(); i++) {
             if(treeComp.isGreaterThanOrEqualTo(node.getItem(i), key)) {
@@ -47,14 +47,61 @@ public class TwoFourTree implements Dictionary {
         return i;
     }
 
-    private TFNode search(Object key) {
-        TFNode current = root();
-        while (true) {
-            int index = FFGTET(current, key);
-            if (current.getChild(index) == null) {
-                return current;
+    private int whatChildIsThis(TFNode child) {
+        TFNode parent = child.getParent();
+        int i;
+        for(i = 0; i <= parent.getNumItems(); i++) {
+            if(parent.getChild(i) == child) {
+                break;
             }
-            current = current.getChild(index);
+        }
+        return i;
+    }
+
+    /**
+     * Changed from while(true) algorithm to recursive method
+     * 
+     * @param node node to be searched in
+     * @param key  to be searched for
+     * @return node where first greater than or equal to is
+     */
+    private TFNode search(TFNode node, Object key) {
+        int index = findFirst(node, key);
+        if (node.getChild(index) == null) {
+            return node;
+        }
+        return search(node.getChild(index), key);
+    }
+    
+    // private TFNode search(Object key) {
+    //     TFNode current = root();
+    //     while (true) {
+    //         int index = findFirst(current, key);
+    //         if (current.getChild(index) == null) {
+    //             return current;
+    //         }
+    //         current = current.getChild(index);
+    //     }
+    // }
+
+    private void overflow(TFNode node) {
+        if (node.getNumItems() == 4) {
+
+            // move index 3 to new node, set parent of that node, and remove item from
+            // original node
+            TFNode newNode = new TFNode();
+            newNode.insertItem(0, node.getItem(3));
+            newNode.setParent(node.getParent());
+            node.removeItem(3);
+
+            // move index 2 to parent node using findFirst method and remove item from
+            // original node
+            int index = findFirst(node.getParent(), node.getItem(2).key());
+            node.getParent().insertItem(index, node.getItem(2));
+            node.removeItem(2);
+
+            // call overflow
+            overflow(node.getParent());
         }
     }
 
@@ -74,14 +121,47 @@ public class TwoFourTree implements Dictionary {
         return returnNode;
     }
 
-    private void leftTransfer(TFNode curr) {
-
+    private void leftTransfer(TFNode node) {
+        TFNode parent = node.getParent();
+        TFNode leftSib = parent.getChild(whatChildIsThis(node) - 1);
+        parent.insertItem(index, data);
     }
 
     private void rightTransfer(TFNode curr) {
 
     }
 
+    private void leftFusion(TFNode curr) {
+        
+        TFNode parent = curr.getParent();
+        TFNode leftSib = parent.getChild(whatChildIsThis(curr) - 1);
+        
+        
+    }
+    
+    private void rightFusion(TFNode curr) {
+
+    }
+
+    private void underflow(TFNode curr) {
+        if(curr.getNumItems() == 0) {
+            int whatChild = whatChildIsThis(curr);
+            if(whatChild > 0 && curr.getParent().getChild(whatChild - 1).getNumItems() > 2) {
+                leftTransfer(curr);
+            }
+            else if(curr.getParent().getChild(whatChild + 1).getNumItems() > 2) {
+                rightTransfer(curr);
+            }
+            else if(whatChild > 0) {
+                leftFusion(curr);
+                underflow(curr.getParent());
+            }
+            else {
+                rightFusion(curr);
+                underflow(curr.getParent());
+            }
+        }
+    }
 
     /**
      * Searches dictionary to determine if key is present
@@ -114,7 +194,7 @@ public class TwoFourTree implements Dictionary {
         }
 
         // Find the node and index
-        TFNode removePoint = search(key);
+        TFNode removePoint = search(root(), key);
         int index = -1;
         boolean keyFound = false;
         for(int i = 0; i < removePoint.getNumItems(); i++) {
@@ -145,12 +225,8 @@ public class TwoFourTree implements Dictionary {
             removePoint = successorNode;
         }
 
-        // Check for underflow
-        if(removePoint.getNumItems() == 0) {
-            if(removePoint.getParent())
-        }
-        
-        // Return the element of the removed item
+        // Check for underflow and return removed item element
+        underflow(removePoint);
         return removed.element();
     }
 
@@ -158,61 +234,44 @@ public class TwoFourTree implements Dictionary {
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
 
-        Integer myInt1 = new Integer(47);
+        Integer myInt1 = 47;
         myTree.insertElement(myInt1, myInt1);
-        Integer myInt2 = new Integer(83);
+        Integer myInt2 = 83;
         myTree.insertElement(myInt2, myInt2);
-        Integer myInt3 = new Integer(22);
+        Integer myInt3 = 22;
         myTree.insertElement(myInt3, myInt3);
-
-        Integer myInt4 = new Integer(16);
+        Integer myInt4 = 16;
         myTree.insertElement(myInt4, myInt4);
-
-        Integer myInt5 = new Integer(49);
+        Integer myInt5 = 49;
         myTree.insertElement(myInt5, myInt5);
-
-        Integer myInt6 = new Integer(100);
+        Integer myInt6 = 100;
         myTree.insertElement(myInt6, myInt6);
-
-        Integer myInt7 = new Integer(38);
+        Integer myInt7 = 38;
         myTree.insertElement(myInt7, myInt7);
-
-        Integer myInt8 = new Integer(3);
+        Integer myInt8 = 3;
         myTree.insertElement(myInt8, myInt8);
-
-        Integer myInt9 = new Integer(53);
+        Integer myInt9 = 53;
         myTree.insertElement(myInt9, myInt9);
-
-        Integer myInt10 = new Integer(66);
+        Integer myInt10 = 66;
         myTree.insertElement(myInt10, myInt10);
-
-        Integer myInt11 = new Integer(19);
+        Integer myInt11 = 19;
         myTree.insertElement(myInt11, myInt11);
-
-        Integer myInt12 = new Integer(23);
+        Integer myInt12 = 23;
         myTree.insertElement(myInt12, myInt12);
-
-        Integer myInt13 = new Integer(24);
+        Integer myInt13 = 24;
         myTree.insertElement(myInt13, myInt13);
-
-        Integer myInt14 = new Integer(88);
+        Integer myInt14 = 88;
         myTree.insertElement(myInt14, myInt14);
-
-        Integer myInt15 = new Integer(1);
+        Integer myInt15 = 1;
         myTree.insertElement(myInt15, myInt15);
-
-        Integer myInt16 = new Integer(97);
+        Integer myInt16 = 97;
         myTree.insertElement(myInt16, myInt16);
-
-        Integer myInt17 = new Integer(94);
+        Integer myInt17 = 94;
         myTree.insertElement(myInt17, myInt17);
-
-        Integer myInt18 = new Integer(35);
+        Integer myInt18 = 35;
         myTree.insertElement(myInt18, myInt18);
-
-        Integer myInt19 = new Integer(51);
+        Integer myInt19 = 51;
         myTree.insertElement(myInt19, myInt19);
-
         myTree.printAllElements();
         System.out.println("done");
 
@@ -221,13 +280,13 @@ public class TwoFourTree implements Dictionary {
 
 
         for (int i = 0; i < TEST_SIZE; i++) {
-            myTree.insertElement(new Integer(i), new Integer(i));
+            myTree.insertElement(i, i); // Changed from Integer()
             //          myTree.printAllElements();
             //         myTree.checkTree();
         }
         System.out.println("removing");
         for (int i = 0; i < TEST_SIZE; i++) {
-            int out = (Integer) myTree.removeElement(new Integer(i));
+            int out = (Integer) myTree.removeElement(i); // Changed from Integer()
             if (out != i) {
                 throw new TwoFourTreeException("main: wrong element removed");
             }
