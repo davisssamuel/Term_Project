@@ -145,7 +145,50 @@ public class TwoFourTree implements Dictionary {
      * @exception ElementNotFoundException if the key is not in dictionary
      */
     public Object removeElement(Object key) throws ElementNotFoundException {
-        return null;
+        // Checks for empty tree
+        if(size == 0) {
+            throw new ElementNotFoundException("ERROR: Tree is empty");
+        }
+
+        // Find the node and index
+        TFNode removePoint = search(root(), key);
+        int index = -1;
+        boolean keyFound = false;
+        for(int i = 0; i < removePoint.getNumItems(); i++) {
+            if(key == removePoint.getItem(i).key()) {
+                keyFound = true;
+                index = i;
+                break;
+            }
+        }
+
+        // Confirm that an item was found
+        if(!keyFound) {
+            throw new ElementNotFoundException("ERROR: No such element in tree");
+        }
+        
+        // Checks for external node
+        Item removed;
+        if(removePoint.getChild(0) == null) {
+            removed = removePoint.removeItem(index);
+        }
+
+        // Otherwise, the node is internal
+        else {
+            TFNode successorNode = inorderSuccessor(removePoint, index);
+            Item successorItem = successorNode.removeItem(0);
+            removed = removePoint.getItem(index);
+            removePoint.insertItem(index, successorItem);
+            removePoint = successorNode;
+        }
+
+        // Check for underflow
+        if(removePoint.getNumItems() == 0) {
+            if(removePoint.getParent())
+        }
+        
+        // Return the element of the removed item
+        return removed.element();
     }
 
     public static void main(String[] args) {
