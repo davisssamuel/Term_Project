@@ -86,6 +86,7 @@ public class TwoFourTree implements Dictionary {
         if(size == 0) {
             throw new ElementNotFoundException("ERROR: Tree is empty");
         }
+
         TFNode removePoint = search(key);
         int index = -1;
         boolean keyFound = false;
@@ -100,6 +101,10 @@ public class TwoFourTree implements Dictionary {
             throw new ElementNotFoundException("ERROR: No such element in tree");
         }
         
+        if(removePoint.getChild(index) == null) {
+            removePoint.removeItem(index);
+        }
+
         return null;
     }
 
