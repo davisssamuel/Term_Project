@@ -58,6 +58,31 @@ public class TwoFourTree implements Dictionary {
         }
     }
 
+    private TFNode inorderSuccessor(TFNode parent, int index) {
+        
+        //initialize the node that will be returned to parent
+        TFNode returnNode = parent;
+        
+        //if the child to the right of the key is not null set it as the return node
+        if(returnNode.getChild(index) != null) {
+            returnNode = returnNode.getChild(index);
+            //set the return node to the left child until the left child is null
+            while(parent.getChild(0) != null) {
+                returnNode = returnNode.getChild(0);
+            }
+        }
+        return returnNode;
+    }
+
+    private void leftTransfer(TFNode curr) {
+
+    }
+
+    private void rightTransfer(TFNode curr) {
+
+    }
+
+
     /**
      * Searches dictionary to determine if key is present
      * @param key to be searched for
@@ -83,10 +108,12 @@ public class TwoFourTree implements Dictionary {
      * @exception ElementNotFoundException if the key is not in dictionary
      */
     public Object removeElement(Object key) throws ElementNotFoundException {
+        // Checks for empty tree
         if(size == 0) {
             throw new ElementNotFoundException("ERROR: Tree is empty");
         }
 
+        // Find the node and index
         TFNode removePoint = search(key);
         int index = -1;
         boolean keyFound = false;
@@ -97,15 +124,34 @@ public class TwoFourTree implements Dictionary {
                 break;
             }
         }
+
+        // Confirm that an item was found
         if(!keyFound) {
             throw new ElementNotFoundException("ERROR: No such element in tree");
         }
         
-        if(removePoint.getChild(index) == null) {
-            removePoint.removeItem(index);
+        // Checks for external node
+        Item removed;
+        if(removePoint.getChild(0) == null) {
+            removed = removePoint.removeItem(index);
         }
 
-        return null;
+        // Otherwise, the node is internal
+        else {
+            TFNode successorNode = inorderSuccessor(removePoint, index);
+            Item successorItem = successorNode.removeItem(0);
+            removed = removePoint.getItem(index);
+            removePoint.insertItem(index, successorItem);
+            removePoint = successorNode;
+        }
+
+        // Check for underflow
+        if(removePoint.getNumItems() == 0) {
+            if(removePoint.getParent())
+        }
+        
+        // Return the element of the removed item
+        return removed.element();
     }
 
     public static void main(String[] args) {
