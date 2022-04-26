@@ -73,7 +73,7 @@ public class TwoFourTree implements Dictionary {
         return search(node.getChild(index), key);
     }
     
-    // private TFNode search(Object key) {
+    /* private TFNode search(Object key) {
     //     TFNode current = root();
     //     while (true) {
     //         int index = findFirst(current, key);
@@ -83,6 +83,7 @@ public class TwoFourTree implements Dictionary {
     //         current = current.getChild(index);
     //     }
     // }
+    */
 
     private void overflow(TFNode node) {
         if (node.getNumItems() == 4) {
@@ -121,25 +122,28 @@ public class TwoFourTree implements Dictionary {
         return returnNode;
     }
 
-    private void leftTransfer(TFNode node) {
+    private void leftTransfer(TFNode node, int index) {
         TFNode parent = node.getParent();
-        TFNode leftSib = parent.getChild(whatChildIsThis(node) - 1);
-        parent.insertItem(index, data);
+        TFNode leftSib = parent.getChild(index - 1);
+        parent.insertItem(index, leftSib.getItem(leftSib.getNumItems()));
+        leftSib.removeItem(leftSib.getNumItems());
     }
 
-    private void rightTransfer(TFNode curr) {
-
+    private void rightTransfer(TFNode node, int index) {
+        TFNode parent = node.getParent();
+        TFNode rightSib = parent.getChild(index + 1);
     }
 
-    private void leftFusion(TFNode curr) {
+    private void leftFusion(TFNode curr, int index) {
         
         TFNode parent = curr.getParent();
-        TFNode leftSib = parent.getChild(whatChildIsThis(curr) - 1);
-        
+        TFNode leftSib = parent.getChild(index - 1);
+        Item borrowedItem  = parent.removeItem(index - 1);
+        leftSib.addItem(leftSib.getNumItems() - 1, borrowedItem);
         
     }
     
-    private void rightFusion(TFNode curr) {
+    private void rightFusion(TFNode curr, int index) {
 
     }
 
@@ -147,17 +151,17 @@ public class TwoFourTree implements Dictionary {
         if(curr.getNumItems() == 0) {
             int whatChild = whatChildIsThis(curr);
             if(whatChild > 0 && curr.getParent().getChild(whatChild - 1).getNumItems() > 2) {
-                leftTransfer(curr);
+                leftTransfer(curr, whatChild);
             }
             else if(curr.getParent().getChild(whatChild + 1).getNumItems() > 2) {
-                rightTransfer(curr);
+                rightTransfer(curr, whatChild);
             }
             else if(whatChild > 0) {
-                leftFusion(curr);
+                leftFusion(curr, whatChild);
                 underflow(curr.getParent());
             }
             else {
-                rightFusion(curr);
+                rightFusion(curr, whatChild);
                 underflow(curr.getParent());
             }
         }
@@ -169,6 +173,14 @@ public class TwoFourTree implements Dictionary {
      * @return object corresponding to key; null if not found
      */
     public Object findElement(Object key) {
+        TFNode node = root();
+        while (node != null) {
+            int index = findFirst(node, key);
+            if (treeComp.isEqual(node.getItem(index).key(), key)) {
+                return node.getItem(index).element();
+            }
+            node = node.getChild(index); // set equal to correct child
+        }
         return null;
     }
 
@@ -178,6 +190,12 @@ public class TwoFourTree implements Dictionary {
      * @param element to be inserted
      */
     public void insertElement(Object key, Object element) {
+        TFNode node = search(root(), key);
+        int index = findFirst(node, key);
+        node.insertItem(index, new Item(key, element));
+
+        // check for overflow
+        overflow(node);
     }
 
     /**
