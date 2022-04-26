@@ -37,6 +37,27 @@ public class TwoFourTree implements Dictionary {
         return (size == 0);
     }
 
+    private int FFGTET(TFNode node, Object key) {
+        int i;
+        for(i = 0; i < node.getNumItems(); i++) {
+            if(treeComp.isGreaterThanOrEqualTo(node.getItem(i), key)) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    private TFNode search(Object key) {
+        TFNode current = root();
+        while (true) {
+            int index = FFGTET(current, key);
+            if (current.getChild(index) == null) {
+                return current;
+            }
+            current = current.getChild(index);
+        }
+    }
+
     /**
      * Searches dictionary to determine if key is present
      * @param key to be searched for
@@ -62,6 +83,23 @@ public class TwoFourTree implements Dictionary {
      * @exception ElementNotFoundException if the key is not in dictionary
      */
     public Object removeElement(Object key) throws ElementNotFoundException {
+        if(size == 0) {
+            throw new ElementNotFoundException("ERROR: Tree is empty");
+        }
+        TFNode removePoint = search(key);
+        int index = -1;
+        boolean keyFound = false;
+        for(int i = 0; i < removePoint.getNumItems(); i++) {
+            if(key == removePoint.getItem(i).key()) {
+                keyFound = true;
+                index = i;
+                break;
+            }
+        }
+        if(!keyFound) {
+            throw new ElementNotFoundException("ERROR: No such element in tree");
+        }
+        
         return null;
     }
 
