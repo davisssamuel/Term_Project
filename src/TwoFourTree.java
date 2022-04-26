@@ -37,8 +37,19 @@ public class TwoFourTree implements Dictionary {
 
     private int findFirst(TFNode node, Object key) {
         int i;
-        for (i = 0; i < node.getNumItems(); i++) {
-            if (treeComp.isGreaterThanOrEqualTo(node.getItem(i), key)) {
+        for(i = 0; i < node.getNumItems(); i++) {
+            if(treeComp.isGreaterThanOrEqualTo(node.getItem(i), key)) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    private int whatChildIsThis(TFNode child) {
+        TFNode parent = child.getParent();
+        int i;
+        for(i = 0; i <= parent.getNumItems(); i++) {
+            if(parent.getChild(i) == child) {
                 break;
             }
         }
@@ -59,36 +70,17 @@ public class TwoFourTree implements Dictionary {
         }
         return search(node.getChild(index), key);
     }
-
-    // while (true) {
-    // int index = findFirst(current, key);
-    // // This puts the new duplicate after the old duplicate
-    // if (treeComp.isEqual(current.getItem(index).key(), key)) {
-    // index++;
+    
+    // private TFNode search(Object key) {
+    //     TFNode current = root();
+    //     while (true) {
+    //         int index = findFirst(current, key);
+    //         if (current.getChild(index) == null) {
+    //             return current;
+    //         }
+    //         current = current.getChild(index);
+    //     }
     // }
-    // if (current.getChild(index) == null) {
-    // return current;
-    // }
-    // current = current.getChild(index);
-    // }
-
-    /**
-     * Searches dictionary to determine if key is present
-     * 
-     * @param key to be searched for
-     * @return object corresponding to key; null if not found
-     */
-    public Object findElement(Object key) {
-        TFNode node = root();
-        while (node != null) {
-            int index = findFirst(node, key);
-            if (treeComp.isEqual(node.getItem(index).key(), key)) {
-                return node.getItem(index).element();
-            }
-            node = node.getChild(index); // set equal to correct child
-        }
-        return null;
-    }
 
     private void overflow(TFNode node) {
         if (node.getNumItems() == 4) {
@@ -111,35 +103,101 @@ public class TwoFourTree implements Dictionary {
         }
     }
 
+    private TFNode inorderSuccessor(TFNode parent, int index) {
+        
+        //initialize the node that will be returned to parent
+        TFNode returnNode = parent;
+        
+        //if the child to the right of the key is not null set it as the return node
+        if(returnNode.getChild(index) != null) {
+            returnNode = returnNode.getChild(index);
+            //set the return node to the left child until the left child is null
+            while(parent.getChild(0) != null) {
+                returnNode = returnNode.getChild(0);
+            }
+        }
+        return returnNode;
+    }
+
+    private void leftTransfer(TFNode node, int index) {
+        TFNode parent = node.getParent();
+        TFNode leftSib = parent.getChild(index - 1);
+        parent.insertItem(index, leftSib.getItem(leftSib.getNumItems()));
+        leftSib.removeItem(leftSib.getNumItems());
+    }
+
+    private void rightTransfer(TFNode node, int index) {
+        TFNode parent = node.getParent();
+        TFNode rightSib = parent.getChild(index + 1);
+    }
+
+    private void leftFusion(TFNode curr, int index) {
+        
+        TFNode parent = curr.getParent();
+        TFNode leftSib = parent.getChild(index - 1);
+        Item borrowedItem  = parent.removeItem(index - 1);
+        leftSib.addItem(leftSib.getNumItems() - 1, borrowedItem);
+        
+    }
+    
+    private void rightFusion(TFNode curr, int index) {
+
+    }
+
+    private void underflow(TFNode curr) {
+        if(curr.getNumItems() == 0) {
+            int whatChild = whatChildIsThis(curr);
+            if(whatChild > 0 && curr.getParent().getChild(whatChild - 1).getNumItems() > 2) {
+                leftTransfer(curr, whatChild);
+            }
+            else if(curr.getParent().getChild(whatChild + 1).getNumItems() > 2) {
+                rightTransfer(curr, whatChild);
+            }
+            else if(whatChild > 0) {
+                leftFusion(curr, whatChild);
+                underflow(curr.getParent());
+            }
+            else {
+                rightFusion(curr, whatChild);
+                underflow(curr.getParent());
+            }
+        }
+    }
+
+    /**
+     * Searches dictionary to determine if key is present
+     * @param key to be searched for
+     * @return object corresponding to key; null if not found
+     */
+    public Object findElement(Object key) {
+        TFNode node = root();
+        while (node != null) {
+            int index = findFirst(node, key);
+            if (treeComp.isEqual(node.getItem(index).key(), key)) {
+                return node.getItem(index).element();
+            }
+            node = node.getChild(index); // set equal to correct child
+        }
+        return null;
+    }
+
     /**
      * Inserts provided element into the Dictionary
-     * 
-     * @param key     of object to be inserted
+     * @param key of object to be inserted
      * @param element to be inserted
      */
-    public void insertElement(Object key, Object element) { // throw InvalidIntegerException
-
+    public void insertElement(Object key, Object element) {
         TFNode node = search(root(), key);
         int index = findFirst(node, key);
         node.insertItem(index, new Item(key, element));
 
         // check for overflow
         overflow(node);
-
-        // TFNode insertNode = search(key);
-        // int index = findFirst(insertNode, key);
-        // insertNode.insertItem(index, new Item(key, element));
-
-        // Check for overflow
-        // if (insertNode.getNumItems() == 4) {
-
-        // }
     }
 
     /**
      * Searches dictionary to determine if key is present, then
      * removes and returns corresponding object
-     * 
      * @param key of data to be removed
      * @return object corresponding to key
      * @exception ElementNotFoundException if the key is not in dictionary
@@ -182,12 +240,8 @@ public class TwoFourTree implements Dictionary {
             removePoint = successorNode;
         }
 
-        // Check for underflow
-        if(removePoint.getNumItems() == 0) {
-            if(removePoint.getParent())
-        }
-        
-        // Return the element of the removed item
+        // Check for underflow and return removed item element
+        underflow(removePoint);
         return removed.element();
     }
 
@@ -195,75 +249,59 @@ public class TwoFourTree implements Dictionary {
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
 
-        Integer myInt1 = new Integer(47);
+        Integer myInt1 = 47;
         myTree.insertElement(myInt1, myInt1);
-        Integer myInt2 = new Integer(83);
+        Integer myInt2 = 83;
         myTree.insertElement(myInt2, myInt2);
-        Integer myInt3 = new Integer(22);
+        Integer myInt3 = 22;
         myTree.insertElement(myInt3, myInt3);
-
-        Integer myInt4 = new Integer(16);
+        Integer myInt4 = 16;
         myTree.insertElement(myInt4, myInt4);
-
-        Integer myInt5 = new Integer(49);
+        Integer myInt5 = 49;
         myTree.insertElement(myInt5, myInt5);
-
-        Integer myInt6 = new Integer(100);
+        Integer myInt6 = 100;
         myTree.insertElement(myInt6, myInt6);
-
-        Integer myInt7 = new Integer(38);
+        Integer myInt7 = 38;
         myTree.insertElement(myInt7, myInt7);
-
-        Integer myInt8 = new Integer(3);
+        Integer myInt8 = 3;
         myTree.insertElement(myInt8, myInt8);
-
-        Integer myInt9 = new Integer(53);
+        Integer myInt9 = 53;
         myTree.insertElement(myInt9, myInt9);
-
-        Integer myInt10 = new Integer(66);
+        Integer myInt10 = 66;
         myTree.insertElement(myInt10, myInt10);
-
-        Integer myInt11 = new Integer(19);
+        Integer myInt11 = 19;
         myTree.insertElement(myInt11, myInt11);
-
-        Integer myInt12 = new Integer(23);
+        Integer myInt12 = 23;
         myTree.insertElement(myInt12, myInt12);
-
-        Integer myInt13 = new Integer(24);
+        Integer myInt13 = 24;
         myTree.insertElement(myInt13, myInt13);
-
-        Integer myInt14 = new Integer(88);
+        Integer myInt14 = 88;
         myTree.insertElement(myInt14, myInt14);
-
-        Integer myInt15 = new Integer(1);
+        Integer myInt15 = 1;
         myTree.insertElement(myInt15, myInt15);
-
-        Integer myInt16 = new Integer(97);
+        Integer myInt16 = 97;
         myTree.insertElement(myInt16, myInt16);
-
-        Integer myInt17 = new Integer(94);
+        Integer myInt17 = 94;
         myTree.insertElement(myInt17, myInt17);
-
-        Integer myInt18 = new Integer(35);
+        Integer myInt18 = 35;
         myTree.insertElement(myInt18, myInt18);
-
-        Integer myInt19 = new Integer(51);
+        Integer myInt19 = 51;
         myTree.insertElement(myInt19, myInt19);
-
         myTree.printAllElements();
         System.out.println("done");
 
         myTree = new TwoFourTree(myComp);
         final int TEST_SIZE = 10000;
 
+
         for (int i = 0; i < TEST_SIZE; i++) {
-            myTree.insertElement(new Integer(i), new Integer(i));
-            // myTree.printAllElements();
-            // myTree.checkTree();
+            myTree.insertElement(i, i); // Changed from Integer()
+            //          myTree.printAllElements();
+            //         myTree.checkTree();
         }
         System.out.println("removing");
         for (int i = 0; i < TEST_SIZE; i++) {
-            int out = (Integer) myTree.removeElement(new Integer(i));
+            int out = (Integer) myTree.removeElement(i); // Changed from Integer()
             if (out != i) {
                 throw new TwoFourTreeException("main: wrong element removed");
             }
@@ -278,7 +316,8 @@ public class TwoFourTree implements Dictionary {
         int indent = 0;
         if (root() == null) {
             System.out.println("The tree is empty");
-        } else {
+        }
+        else {
             printTree(root(), indent);
         }
     }
@@ -336,7 +375,8 @@ public class TwoFourTree implements Dictionary {
                 if (start.getChild(childIndex) == null) {
                     System.out.println("Mixed null and non-null children");
                     printTFNode(start);
-                } else {
+                }
+                else {
                     if (start.getChild(childIndex).getParent() != start) {
                         System.out.println("Parent to child confusion");
                         printTFNode(start);
@@ -356,5 +396,6 @@ public class TwoFourTree implements Dictionary {
         for (int childIndex = 0; childIndex < numChildren; childIndex++) {
             checkTreeFromNode(start.getChild(childIndex));
         }
+
     }
 }
