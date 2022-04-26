@@ -1,3 +1,5 @@
+import java.util.Currency;
+
 // package termproject;
 
 /**
@@ -45,20 +47,32 @@ public class TwoFourTree implements Dictionary {
         return i;
     }
 
-    private TFNode search(Object key) {
-        TFNode current = root();
-        while (true) {
-            int index = findFirst(current, key);
-            // This puts the new duplicate after the old duplicate
-            if (treeComp.isEqual(current.getItem(index).key(), key)) {
-                index++;
-            }
-            if (current.getChild(index) == null) {
-                return current;
-            }
-            current = current.getChild(index);
+    /**
+     * Changed from while(true) algorithm to recursive method
+     * 
+     * @param node node to be searched in
+     * @param key  to be searched for
+     * @return node where first greater than or equal to is
+     */
+    private TFNode search(TFNode node, Object key) {
+        int index = findFirst(node, key);
+        if (node.getChild(index) == null) {
+            return node;
         }
+        return search(node.getChild(index), key);
     }
+
+    // while (true) {
+    // int index = findFirst(current, key);
+    // // This puts the new duplicate after the old duplicate
+    // if (treeComp.isEqual(current.getItem(index).key(), key)) {
+    // index++;
+    // }
+    // if (current.getChild(index) == null) {
+    // return current;
+    // }
+    // current = current.getChild(index);
+    // }
 
     /**
      * Searches dictionary to determine if key is present
@@ -67,15 +81,36 @@ public class TwoFourTree implements Dictionary {
      * @return object corresponding to key; null if not found
      */
     public Object findElement(Object key) {
-        TFNode current = root();
-        while (current != null) {
-            int index = findFirst(current, key);
-            if (treeComp.isEqual(current.getItem(index).key(), key)) {
-                return current.getItem(index).element();
+        TFNode node = root();
+        while (node != null) {
+            int index = findFirst(node, key);
+            if (treeComp.isEqual(node.getItem(index).key(), key)) {
+                return node.getItem(index).element();
             }
-            current = current.getChild(index); // set equal to correct child
+            node = node.getChild(index); // set equal to correct child
         }
         return null;
+    }
+
+    private void overflow(TFNode node) {
+        if (node.getNumItems() == 4) {
+
+            // move index 3 to new node, set parent of that node, and remove item from
+            // original node
+            TFNode newNode = new TFNode();
+            newNode.insertItem(0, node.getItem(3));
+            newNode.setParent(node.getParent());
+            node.removeItem(3);
+
+            // move index 2 to parent node using findFirst method and remove item from
+            // original node
+            int index = findFirst(node.getParent(), node.getItem(2).key());
+            node.getParent().insertItem(index, node.getItem(2));
+            node.removeItem(2);
+
+            // call overflow
+            overflow(node.getParent());
+        }
     }
 
     /**
@@ -85,14 +120,22 @@ public class TwoFourTree implements Dictionary {
      * @param element to be inserted
      */
     public void insertElement(Object key, Object element) { // throw InvalidIntegerException
-        TFNode insertNode = search(key);
-        int index = findFirst(insertNode, key);
-        insertNode.insertItem(index, new Item(key, element));
+
+        TFNode node = search(root(), key);
+        int index = findFirst(node, key);
+        node.insertItem(index, new Item(key, element));
+
+        // check for overflow
+        overflow(node);
+
+        // TFNode insertNode = search(key);
+        // int index = findFirst(insertNode, key);
+        // insertNode.insertItem(index, new Item(key, element));
 
         // Check for overflow
-        if (insertNode.getNumItems() == 4) {
+        // if (insertNode.getNumItems() == 4) {
 
-        }
+        // }
     }
 
     /**
