@@ -188,17 +188,16 @@ public class TwoFourTree implements Dictionary {
         leftSib.setChild(2, node.getChild(0));
         leftSib.getChild(2).setParent(leftSib);
         leftSib.setParent(parent);
-        parent.setChild(whatChild(leftSib), leftSib);
+        parent.setChild(whatChild(node), leftSib);
     }
 
-    // TODO
     private void rightFusion(TFNode node, int index) {
         TFNode parent = node.getParent();
         TFNode rightSib = parent.getChild(index + 1);
         Item borrow = parent.removeItem(index);
         rightSib.insertItem(0, borrow);
-        // Sam Marshall will finish
-
+        rightSib.setChild(0, node.getChild(0));
+        rightSib.getChild(0).setParent(rightSib);
     }
 
     private void underflow(TFNode node) {
