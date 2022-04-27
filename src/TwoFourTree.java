@@ -84,6 +84,7 @@ public class TwoFourTree implements Dictionary {
         return search(node.getChild(index), key);
     }
 
+    /*
     // private TFNode search(Object key) {
     // TFNode current = root();
     // while (true) {
@@ -94,6 +95,7 @@ public class TwoFourTree implements Dictionary {
     // current = current.getChild(index);
     // }
     // }
+    */
 
     /**
      * Corrects overflow within tree recursively
@@ -147,6 +149,7 @@ public class TwoFourTree implements Dictionary {
         TFNode leftSib = parent.getChild(index - 1);
 
         // handle kids
+        node.setChild(1, node.getChild(0)); /* left child must be shifted */
         node.setChild(0, leftSib.getChild(leftSib.getNumItems()));
         node.getChild(0).setParent(node);
         // leftSib.getChild(leftSib.getNumItems()).setParent(node);
@@ -154,8 +157,8 @@ public class TwoFourTree implements Dictionary {
 
         // move greatest value from left sibling to parent node
         // and the least value from the parent node to the current node
-        node.insertItem(0, parent.replaceItem(index, leftSib.getItem(leftSib.getNumItems())));
-        leftSib.removeItem(leftSib.getNumItems());
+        node.insertItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1))); /* added - 1 */
+        leftSib.removeItem(leftSib.getNumItems() - 1);
     }
 
     // TODO
@@ -415,7 +418,7 @@ public class TwoFourTree implements Dictionary {
         System.out.println();
     }
 
-    // checks if tree is properly hooked up, i.e., children point to parents
+    // Checks if tree is properly hooked up, i.e., children point to parents
     public void checkTree() {
         checkTreeFromNode(treeRoot);
     }
