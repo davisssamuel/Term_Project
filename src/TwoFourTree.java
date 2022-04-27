@@ -119,14 +119,23 @@ public class TwoFourTree implements Dictionary {
         // move index 3 to new node, set parent of that node, and remove item from
         // original node
         TFNode newNode = new TFNode();
+        TFNode parent = node.getParent();
         newNode.insertItem(0, node.getItem(3));
         newNode.setParent(node.getParent());
+        if(node.getChild(0) != null) {
+            newNode.setChild(0, node.getChild(3));
+            newNode.getChild(0).setParent(newNode);
+            newNode.setChild(1, node.getChild(4));
+            newNode.getChild(1).setParent(newNode);
+        }
         node.removeItem(3);
 
         // move index 2 to parent node using findFirst method and remove item from
         // original node
         // int index = findFirst(node.getParent(), node.getItem(2).key());
-        node.getParent().insertItem(whatChild(node), node.getItem(2));
+        int whatChild = whatChild(node);
+        parent.insertItem(whatChild, node.getItem(2));
+        parent.setChild(whatChild + 1, newNode);
         node.removeItem(2);
 
         // call overflow
