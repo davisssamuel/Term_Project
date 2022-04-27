@@ -128,15 +128,16 @@ public class TwoFourTree implements Dictionary {
             newNode.setChild(1, node.getChild(4));
             newNode.getChild(1).setParent(newNode);
         }
-        node.removeItem(3);
+        node.deleteItem(3);
 
         // move index 2 to parent node using findFirst method and remove item from
         // original node
         // int index = findFirst(node.getParent(), node.getItem(2).key());
         int whatChild = whatChild(node);
+
         parent.insertItem(whatChild, node.getItem(2));
         parent.setChild(whatChild + 1, newNode);
-        node.removeItem(2);
+        node.deleteItem(2);
 
         // call overflow
         overflow(node.getParent());
@@ -278,6 +279,9 @@ public class TwoFourTree implements Dictionary {
             overflow(node);
         }
 
+        System.out.println("Inserting: " + key);
+        this.printAllElements();
+
         // increment size
         size++;
     }
@@ -393,6 +397,7 @@ public class TwoFourTree implements Dictionary {
         myTree.printAllElements();
         System.out.println("done");
 
+        /*
         myTree = new TwoFourTree(myComp);
         final int TEST_SIZE = 10000;
 
@@ -412,6 +417,7 @@ public class TwoFourTree implements Dictionary {
             }
         }
         System.out.println("done");
+        */
     }
 
     public void printAllElements() {
