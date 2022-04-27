@@ -95,41 +95,50 @@ public class TwoFourTree implements Dictionary {
     // }
     // }
 
+    /**
+     * Corrects overflow within tree recursively
+     * 
+     * @param node node to be corrected
+     */
     private void overflow(TFNode node) {
-        if (node.getNumItems() == 4) {
-
-            // move index 3 to new node, set parent of that node, and remove item from
-            // original node
-            TFNode newNode = new TFNode();
-            newNode.insertItem(0, node.getItem(3));
-            newNode.setParent(node.getParent());
-            node.removeItem(3);
-
-            // move index 2 to parent node using findFirst method and remove item from
-            // original node
-            // int index = findFirst(node.getParent(), node.getItem(2).key());
-            node.getParent().insertItem(whatChild(node), node.getItem(2));
-            node.removeItem(2);
-
-            // call overflow
-            overflow(node.getParent());
+        
+        // check if the node is not overflowed
+        if (node.getNumItems() != 4) {
+            return;
         }
+
+        // move index 3 to new node, set parent of that node, and remove item from
+        // original node
+        TFNode newNode = new TFNode();
+        newNode.insertItem(0, node.getItem(3));
+        newNode.setParent(node.getParent());
+        node.removeItem(3);
+
+        // move index 2 to parent node using findFirst method and remove item from
+        // original node
+        // int index = findFirst(node.getParent(), node.getItem(2).key());
+        node.getParent().insertItem(whatChild(node), node.getItem(2));
+        node.removeItem(2);
+
+        // call overflow
+        overflow(node.getParent());
     }
 
     private TFNode indorderSuccr(TFNode parent, int index) {
 
         // initialize the node that will be returned to parent
-        TFNode returnNode = parent;
+        TFNode retNode = parent;
 
         // if the child to the right of the key is not null set it as the return node
-        if (returnNode.getChild(index) != null) {
-            returnNode = returnNode.getChild(index);
+        if (retNode.getChild(index) != null) {
+            retNode = retNode.getChild(index);
+
             // set the return node to the left child until the left child is null
             while (parent.getChild(0) != null) {
-                returnNode = returnNode.getChild(0);
+                retNode = retNode.getChild(0);
             }
         }
-        return returnNode;
+        return retNode;
     }
 
     private void leftTransfer(TFNode node, int index) {
@@ -151,10 +160,10 @@ public class TwoFourTree implements Dictionary {
 
     // TODO
     private void rightTransfer(TFNode node, int index) {
-        
+
         TFNode parent = node.getParent();
         TFNode rightSib = parent.getChild(index + 1);
-        
+
         // handle kids
         node.setChild(1, rightSib.getChild(0));
         node.getChild(1).setParent(node);
@@ -175,7 +184,7 @@ public class TwoFourTree implements Dictionary {
         leftSib.setParent(parent);
         parent.setChild(whatChild(leftSib), leftSib);
     }
-    
+
     // TODO
     private void rightFusion(TFNode node, int index) {
         TFNode parent = node.getParent();
@@ -187,19 +196,23 @@ public class TwoFourTree implements Dictionary {
     }
 
     private void underflow(TFNode node) {
-        if (node.getNumItems() == 0) {
-            int whatChild = whatChild(node);
-            if (whatChild > 0 && node.getParent().getChild(whatChild - 1).getNumItems() > 2) {
-                leftTransfer(node, whatChild);
-            } else if (node.getParent().getChild(whatChild + 1).getNumItems() > 2) {
-                rightTransfer(node, whatChild);
-            } else if (whatChild > 0) {
-                leftFusion(node, whatChild);
-                underflow(node.getParent());
-            } else {
-                rightFusion(node, whatChild);
-                underflow(node.getParent());
-            }
+
+        // check if the node is not underflowed
+        if (node.getNumItems() > 0) {
+            return;
+        }
+        
+        int whatChild = whatChild(node);
+        if (whatChild > 0 && node.getParent().getChild(whatChild - 1).getNumItems() > 2) {
+            leftTransfer(node, whatChild);
+        } else if (node.getParent().getChild(whatChild + 1).getNumItems() > 2) {
+            rightTransfer(node, whatChild);
+        } else if (whatChild > 0) {
+            leftFusion(node, whatChild);
+            underflow(node.getParent());
+        } else {
+            rightFusion(node, whatChild);
+            underflow(node.getParent());
         }
         // underflow(?);
     }
