@@ -151,17 +151,18 @@ public class TwoFourTree implements Dictionary {
         // handle kids
         node.setChild(1, node.getChild(0)); /* left child must be shifted */
         node.setChild(0, leftSib.getChild(leftSib.getNumItems()));
-        node.getChild(0).setParent(node);
+        if(node.getChild(0) != null) { /* added null check */
+            node.getChild(0).setParent(node);
+        }
         // leftSib.getChild(leftSib.getNumItems()).setParent(node);
         // leftSib.setChild(leftSib.getNumItems(), null);
 
         // move greatest value from left sibling to parent node
         // and the least value from the parent node to the current node
-        node.insertItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1))); /* added - 1 */
-        leftSib.removeItem(leftSib.getNumItems() - 1);
+        node.addItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1))); /* added - 1, changed to addItem */
+        leftSib.removeItem(leftSib.getNumItems() - 1); /* added - 1 */
     }
 
-    // TODO
     private void rightTransfer(TFNode node, int index) {
 
         TFNode parent = node.getParent();
@@ -169,11 +170,13 @@ public class TwoFourTree implements Dictionary {
 
         // handle kids
         node.setChild(1, rightSib.getChild(0));
-        node.getChild(1).setParent(node);
+        if(node.getChild(0) != null) { /* added null check */
+            node.getChild(1).setParent(node);
+        }
 
         // move least value from right sibling to parent node
         // and the greatest value from the parent node to the current node
-        node.insertItem(0, parent.replaceItem(index, rightSib.getItem(0)));
+        node.addItem(0, parent.replaceItem(index - 1, rightSib.getItem(0))); /* added - 1, changed to addItem */
         rightSib.removeItem(0);
     }
 
