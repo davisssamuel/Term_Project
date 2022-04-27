@@ -184,7 +184,7 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         TFNode leftSib = parent.getChild(index - 1);
         Item borrow = parent.removeItem(index - 1);
-        leftSib.addItem(leftSib.getNumItems() - 1, borrow);
+        leftSib.addItem(1, borrow); /* changed to index 1  from leftSib.getNumItems() - 1 */
         leftSib.setChild(2, node.getChild(0));
         leftSib.getChild(2).setParent(leftSib);
         leftSib.setParent(parent);
