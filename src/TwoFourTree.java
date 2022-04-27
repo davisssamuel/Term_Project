@@ -193,7 +193,7 @@ public class TwoFourTree implements Dictionary {
 
         // move least value from right sibling to parent node
         // and the greatest value from the parent node to the current node
-        node.addItem(0, parent.replaceItem(index - 1, rightSib.getItem(0))); /* added - 1, changed to addItem */
+        node.addItem(0, parent.replaceItem(index, rightSib.getItem(0))); /* changed to addItem */
         rightSib.removeItem(0);
     }
 
@@ -228,6 +228,12 @@ public class TwoFourTree implements Dictionary {
             return;
         }
         
+        // handle underflow at root
+        if(node == treeRoot) {
+            treeRoot = node.getChild(0);
+            return;
+        }
+
         int whatChild = whatChild(node);
         if (whatChild > 0 && node.getParent().getChild(whatChild - 1).getNumItems() > 2) {
             leftTransfer(node, whatChild);
@@ -445,6 +451,7 @@ public class TwoFourTree implements Dictionary {
             if (i > TEST_SIZE - 15) {
                 myTree.printAllElements();
             }
+            myTree.checkTree();
         }
         System.out.println("done");
     }
