@@ -45,7 +45,7 @@ public class TwoFourTree implements Dictionary {
     private int findFirst(TFNode node, Object key) {
         int i;
         for (i = 0; i < node.getNumItems(); i++) {
-            if (treeComp.isGreaterThanOrEqualTo(node.getItem(i), key)) {
+            if (treeComp.isGreaterThanOrEqualTo(node.getItem(i).key(), key)) {
                 break;
             }
         }
@@ -62,7 +62,7 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = child.getParent();
         int i;
         for (i = 0; i <= parent.getNumItems(); i++) {
-            if (treeComp.isEqual(parent.getChild(i), child)) { // changed to use treeComp
+            if (parent.getChild(i) == child) { // changed to not use treeComp
                 break;
             }
         }
@@ -107,6 +107,13 @@ public class TwoFourTree implements Dictionary {
         // check if the node is not overflowed
         if (node.getNumItems() != 4) {
             return;
+        }
+
+        // account for root node overflow
+        if(node == treeRoot) {
+            node.setParent(new TFNode());
+            treeRoot = node.getParent();
+            treeRoot.setChild(0, node);
         }
 
         // move index 3 to new node, set parent of that node, and remove item from
@@ -247,13 +254,23 @@ public class TwoFourTree implements Dictionary {
      * @param element to be inserted
      */
     public void insertElement(Object key, Object element) {
-        // search for the correct node, find the right index, and insert the item
-        TFNode node = search(root(), key);
-        int index = findFirst(node, key);
-        node.insertItem(index, new Item(key, element));
+        // first, check to see if the tree is empty
+        if(size == 0) {
+            treeRoot = new TFNode();
+            treeRoot.addItem(0, new Item(key, element));
+        }
 
-        // check for overflow
-        overflow(node);
+        // search for the correct node, find the right index, and insert the item
+        else {
+            TFNode node = search(root(), key);
+            int index = findFirst(node, key);
+            node.insertItem(index, new Item(key, element));
+            // check for overflow
+            overflow(node);
+        }
+
+        // increment size
+        size++;
     }
 
     /**
