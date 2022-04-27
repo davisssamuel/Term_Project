@@ -250,6 +250,10 @@ public class TwoFourTree implements Dictionary {
      * @return object corresponding to key; null if not found
      */
     public Object findElement(Object key) {
+        if(!treeComp.isComparable(key)) {
+            throw new InvalidIntegerException("Key is of wrong type");
+        }
+       
         TFNode node = root();
         while (node != null) {
             int index = findFirst(node, key);
@@ -268,6 +272,10 @@ public class TwoFourTree implements Dictionary {
      * @param element to be inserted
      */
     public void insertElement(Object key, Object element) {
+        if(!treeComp.isComparable(key)) {
+            throw new InvalidIntegerException("Key is of wrong type");
+        }
+        
         // first, check to see if the tree is empty
         if(size == 0) {
             treeRoot = new TFNode();
@@ -296,29 +304,51 @@ public class TwoFourTree implements Dictionary {
      * @exception ElementNotFoundException if the key is not in dictionary
      */
     public Object removeElement(Object key) throws ElementNotFoundException {
+        // Check for a comparable key
+        if(!treeComp.isComparable(key)) {
+            throw new InvalidIntegerException("Key is of wrong type");
+        }
+
         // Checks for empty tree
         if (size == 0) {
             throw new ElementNotFoundException("ERROR: Tree is empty");
         }
 
         // Find the node and index
-        TFNode node = search(root(), key);
+        TFNode node = root();
         int index = -1;
-        // boolean keyFound = false;
-
-        for (int i = 0; i < node.getNumItems(); i++) {
-            if (node.getItem(i).key() == key) {
-                index = i;
+        while (node != null) {
+            index = findFirst(node, key);
+            if (treeComp.isEqual(node.getItem(index).key(), key)) {
                 break;
             }
+            node = node.getChild(index); // set equal to correct child
         }
+        if (node == null) {
+            throw new ElementNotFoundException("ERROR: No such item in tree");
+        }
+
+        // Changed the above again, the search function won't work because it gives only
+        // leaf nodes. I basically copied our code from findElement()
+
+        // TFNode node = search(root(), key); // returns leaf, won't work
+        // int index = -1;
+        // boolean keyFound = false;
+
+        //for (int i = 0; i < node.getNumItems(); i++) {
+        //    if (node.getItem(i).key() == key) {
+        //        index = i;
+        //        break;
+        //    }
+        //}
 
         // check that an item was found
         // changed this because if the item is found the index should be changed
         // removes the need to declare a new boolean variable
-        if (index == -1) {
-            throw new ElementNotFoundException("ERROR: No such element in tree");
-        }
+        
+        //if (index == -1) {
+        //    throw new ElementNotFoundException("ERROR: No such item in tree");
+        //}
 
         // for (int i = 0; i < removePoint.getNumItems(); i++) {
         //     if (key == removePoint.getItem(i).key()) {
