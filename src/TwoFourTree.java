@@ -203,7 +203,9 @@ public class TwoFourTree implements Dictionary {
         Item borrow = parent.removeItem(index - 1);
         leftSib.addItem(1, borrow); /* changed to index 1  from leftSib.getNumItems() - 1 */
         leftSib.setChild(2, node.getChild(0));
-        leftSib.getChild(2).setParent(leftSib);
+        if(leftSib.getChild(0) != null) {
+            leftSib.getChild(2).setParent(leftSib);
+        }
         leftSib.setParent(parent);
         parent.setChild(whatChild(node), leftSib);
     }
@@ -214,7 +216,9 @@ public class TwoFourTree implements Dictionary {
         Item borrow = parent.removeItem(index);
         rightSib.insertItem(0, borrow);
         rightSib.setChild(0, node.getChild(0));
-        rightSib.getChild(0).setParent(rightSib);
+        if(rightSib.getChild(0) != null) {
+            rightSib.getChild(0).setParent(rightSib);
+        }
     }
 
     private void underflow(TFNode node) {
@@ -394,14 +398,13 @@ public class TwoFourTree implements Dictionary {
         myTree.printAllElements();
         System.out.println("done");
 
-        /*
         myTree = new TwoFourTree(myComp);
         final int TEST_SIZE = 10000;
 
         for (int i = 0; i < TEST_SIZE; i++) {
             myTree.insertElement(i, i); // Changed from Integer()
             // myTree.printAllElements();
-            // myTree.checkTree();
+            myTree.checkTree();
         }
         System.out.println("removing");
         for (int i = 0; i < TEST_SIZE; i++) {
@@ -414,7 +417,6 @@ public class TwoFourTree implements Dictionary {
             }
         }
         System.out.println("done");
-        */
     }
 
     public void printAllElements() {
