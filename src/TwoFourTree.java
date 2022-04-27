@@ -279,9 +279,6 @@ public class TwoFourTree implements Dictionary {
             overflow(node);
         }
 
-        System.out.println("Inserting: " + key);
-        this.printAllElements();
-
         // increment size
         size++;
     }
