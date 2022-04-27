@@ -122,13 +122,14 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         newNode.insertItem(0, node.getItem(3));
         newNode.setParent(node.getParent());
+        // Added this area to set children's parent pointers if there are children
         if(node.getChild(0) != null) {
             newNode.setChild(0, node.getChild(3));
             newNode.getChild(0).setParent(newNode);
             newNode.setChild(1, node.getChild(4));
             newNode.getChild(1).setParent(newNode);
         }
-        node.deleteItem(3);
+        node.deleteItem(3); // Changed from remove to delete
 
         // move index 2 to parent node using findFirst method and remove item from
         // original node
@@ -137,7 +138,7 @@ public class TwoFourTree implements Dictionary {
 
         parent.insertItem(whatChild, node.getItem(2));
         parent.setChild(whatChild + 1, newNode);
-        node.deleteItem(2);
+        node.deleteItem(2); // Changed from remove to delete
 
         // call overflow
         overflow(node.getParent());
@@ -296,6 +297,8 @@ public class TwoFourTree implements Dictionary {
             // check for overflow
             overflow(node);
         }
+
+        // we forgot to increment size
 
         // increment size
         size++;
