@@ -100,7 +100,6 @@ public class TwoFourTree implements Dictionary {
         // correct root node overflow
         if (node == treeRoot) {
             node.setParent(new TFNode());
-            // treeRoot = node.getParent();
             setRoot(node.getParent()); // changed to use setRoot() method provided
             treeRoot.setChild(0, node);
         }
@@ -220,8 +219,8 @@ public class TwoFourTree implements Dictionary {
         }
         
         // handle underflow at root
-        if(node == treeRoot) {
-            treeRoot = node.getChild(0);
+        if (node == treeRoot) {
+            setRoot(node.getChild(0)); // changed to use setRoot() method provided
             return;
         }
 
@@ -245,8 +244,9 @@ public class TwoFourTree implements Dictionary {
      * @param key to be searched for
      * @return object corresponding to key; null if not found
      */
-    public Object findElement(Object key) {
-        if(!treeComp.isComparable(key)) {
+    public Object findElement(Object key) throws InvalidIntegerException {
+        
+        if (!treeComp.isComparable(key)) {
             throw new InvalidIntegerException("Key is of wrong type");
         }
        
@@ -267,14 +267,14 @@ public class TwoFourTree implements Dictionary {
      * @param key of object to be inserted
      * @param element to be inserted
      */
-    public void insertElement(Object key, Object element) {
-        if(!treeComp.isComparable(key)) {
+    public void insertElement(Object key, Object element) throws InvalidIntegerException {
+        if (!treeComp.isComparable(key)) {
             throw new InvalidIntegerException("Key is of wrong type");
         }
         
         // first, check to see if the tree is empty
         if (size == 0) {
-            treeRoot = new TFNode();
+            setRoot(new TFNode()); // changed to use setRoot() method provided
             treeRoot.addItem(0, new Item(key, element));
         }
 
