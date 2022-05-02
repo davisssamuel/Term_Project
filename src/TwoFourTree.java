@@ -130,7 +130,7 @@ public class TwoFourTree implements Dictionary {
     }
     
 
-    private TFNode indorderSuccr(TFNode parent, int index) {
+    private TFNode inorderSuccr(TFNode parent, int index) {
 
         TFNode retNode = parent;
 
@@ -334,7 +334,7 @@ public class TwoFourTree implements Dictionary {
         if (node.getChild(0) == null) {
             removed = node.removeItem(index);
         } else {
-            TFNode successorNode = indorderSuccr(node, index);
+            TFNode successorNode = inorderSuccr(node, index);
             Item successorItem = successorNode.removeItem(0);
             removed = node.getItem(index);
             node.insertItem(index, successorItem);
@@ -434,8 +434,8 @@ public class TwoFourTree implements Dictionary {
 
         System.out.println("removing");
         for (int i = 0; i < TEST_SIZE; i++) {
-            int out = (Integer) myTree.removeElement(i); // Changed from Integer()
-            if (out != i) {
+            int out = (Integer) myTree.removeElement(elementArray[i]); // Changed from Integer()
+            if (out != elementArray[i]) {
                 throw new TwoFourTreeException("main: wrong element removed");
             }
             if (i > TEST_SIZE - 15) {
