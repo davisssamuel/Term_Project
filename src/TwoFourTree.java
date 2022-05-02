@@ -109,17 +109,18 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         newNode.setParent(node.getParent());
 
-        // set children's parents if children exist 
-        if(node.getChild(0) != null) {
-            newNode.setChild(0, node.getChild(3));
-            newNode.getChild(0).setParent(newNode);
+        // set children's parents if children exist
+        if (node.getChild(0) != null) {
             newNode.setChild(1, node.getChild(4));
             newNode.getChild(1).setParent(newNode);
+            newNode.setChild(0, node.getChild(3));
+            newNode.getChild(0).setParent(newNode);
         }
-        node.deleteItem(3); // changed from remove to delete
+        
+        newNode.addItem(0, node.getItem(3)); // changed to addItem so that children are not shifted
+        node.deleteItem(3); // changed from removeItem to deleteItem
 
         int whatChild = whatChild(node);
-
         parent.insertItem(whatChild, node.getItem(2));
         parent.setChild(whatChild + 1, newNode);
         node.deleteItem(2); // changed from remove to delete
@@ -334,7 +335,7 @@ public class TwoFourTree implements Dictionary {
         // Changed the above again, the search function won't work because it gives only
         // leaf nodes. I basically copied our code from findElement()
 
-        // TFNode node = search(root(), key); // returns leaf, won't work
+        // TFNode node = search(root(), key); // returns leaf, elements we are looking for may not always be at a leaf
         // int index = -1;
         // boolean keyFound = false;
 
