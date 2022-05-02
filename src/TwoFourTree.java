@@ -162,12 +162,8 @@ public class TwoFourTree implements Dictionary {
          * move greatest value from left sibling to parent node
          * and the least value from the parent node to the current node
          */
-        node.addItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1))); /*
-                                                                                                     * added - 1,
-                                                                                                     * changed to
-                                                                                                     * addItem
-                                                                                                     */
-        leftSib.removeItem(leftSib.getNumItems() - 1); /* added - 1 */
+        node.addItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1)));
+        leftSib.removeItem(leftSib.getNumItems() - 1);
     }
 
     private void rightTransfer(TFNode node, int index) {
