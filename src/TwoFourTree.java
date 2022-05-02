@@ -37,13 +37,13 @@ public class TwoFourTree implements Dictionary {
      * Finds the first index that is greater than or equal to the key
      * 
      * @param node to be searched in
-     * @param key to be compared to
+     * @param key  to be compared to
      * @return index of the current node
      */
     private int findFirst(TFNode node, Object key) {
         int i;
         for (i = 0; i < node.getNumItems(); i++) {
-            if(node.getItem(i) == null) {
+            if (node.getItem(i) == null) {
                 System.out.println("help");
             }
             if (treeComp.isGreaterThanOrEqualTo(node.getItem(i).key(), key)) {
@@ -74,7 +74,7 @@ public class TwoFourTree implements Dictionary {
      * Searches for the node where the key belongs
      * 
      * @param node to be searched in
-     * @param key to be searched for
+     * @param key  to be searched for
      * @return node where the key is first greater than or equal to is
      */
     private TFNode search(TFNode node, Object key) {
@@ -91,14 +91,14 @@ public class TwoFourTree implements Dictionary {
      * @param node node to be corrected
      */
     private void overflow(TFNode node) {
-        
+
         /* guard clause for when a node is not overflowed */
         if (node.getNumItems() != 4) {
             return;
         }
 
         /* correct root node overflow */
-        if(node == treeRoot) {
+        if (node == treeRoot) {
             node.setParent(new TFNode());
             treeRoot = node.getParent();
             treeRoot.setChild(0, node);
@@ -152,15 +152,21 @@ public class TwoFourTree implements Dictionary {
         /* handle kids */
         node.setChild(1, node.getChild(0)); /* left child must be shifted */
         node.setChild(0, leftSib.getChild(leftSib.getNumItems()));
-        if(node.getChild(0) != null) { /* added null check */
+        if (node.getChild(0) != null) { /* added null check */
             node.getChild(0).setParent(node);
         }
         // leftSib.getChild(leftSib.getNumItems()).setParent(node);
         // leftSib.setChild(leftSib.getNumItems(), null);
 
-        /* move greatest value from left sibling to parent node
-        and the least value from the parent node to the current node */
-        node.addItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1))); /* added - 1, changed to addItem */
+        /*
+         * move greatest value from left sibling to parent node
+         * and the least value from the parent node to the current node
+         */
+        node.addItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1))); /*
+                                                                                                     * added - 1,
+                                                                                                     * changed to
+                                                                                                     * addItem
+                                                                                                     */
         leftSib.removeItem(leftSib.getNumItems() - 1); /* added - 1 */
     }
 
@@ -171,12 +177,14 @@ public class TwoFourTree implements Dictionary {
 
         /* handle kids */
         node.setChild(1, rightSib.getChild(0));
-        if(node.getChild(0) != null) {
+        if (node.getChild(0) != null) {
             node.getChild(1).setParent(node);
         }
 
-        /* move least value from right sibling to parent node
-        and the greatest value from the parent node to the current node */
+        /*
+         * move least value from right sibling to parent node
+         * and the greatest value from the parent node to the current node
+         */
         node.addItem(0, parent.replaceItem(index, rightSib.getItem(0)));
         rightSib.removeItem(0);
     }
@@ -187,7 +195,7 @@ public class TwoFourTree implements Dictionary {
         Item borrow = parent.removeItem(index - 1);
         leftSib.addItem(1, borrow);
         leftSib.setChild(2, node.getChild(0));
-        if(leftSib.getChild(0) != null) {
+        if (leftSib.getChild(0) != null) {
             leftSib.getChild(2).setParent(leftSib);
         }
         leftSib.setParent(parent);
@@ -200,7 +208,7 @@ public class TwoFourTree implements Dictionary {
         Item borrow = parent.removeItem(index);
         rightSib.insertItem(0, borrow);
         rightSib.setChild(0, node.getChild(0));
-        if(rightSib.getChild(0) != null) {
+        if (rightSib.getChild(0) != null) {
             rightSib.getChild(0).setParent(rightSib);
         }
     }
@@ -211,9 +219,9 @@ public class TwoFourTree implements Dictionary {
         if (node.getNumItems() > 0) {
             return;
         }
-        
+
         /* handle underflow at root */
-        if(node == treeRoot) {
+        if (node == treeRoot) {
             treeRoot = node.getChild(0);
             return;
         }
@@ -221,8 +229,8 @@ public class TwoFourTree implements Dictionary {
         int whatChild = whatChild(node);
         if (whatChild > 0 && node.getParent().getChild(whatChild - 1).getNumItems() > 1) {
             leftTransfer(node, whatChild);
-        } else if (node.getParent().getChild(whatChild + 1) != null && 
-                   node.getParent().getChild(whatChild + 1).getNumItems() > 1) {
+        } else if (node.getParent().getChild(whatChild + 1) != null &&
+                node.getParent().getChild(whatChild + 1).getNumItems() > 1) {
             rightTransfer(node, whatChild);
         } else if (whatChild > 0) {
             leftFusion(node, whatChild);
@@ -240,10 +248,10 @@ public class TwoFourTree implements Dictionary {
      * @return object corresponding to key; null if not found
      */
     public Object findElement(Object key) {
-        if(!treeComp.isComparable(key)) {
+        if (!treeComp.isComparable(key)) {
             throw new InvalidIntegerException("Key is of wrong type");
         }
-       
+
         TFNode node = root();
         while (node != null) {
             int index = findFirst(node, key);
@@ -258,16 +266,16 @@ public class TwoFourTree implements Dictionary {
     /**
      * Inserts provided element into the Dictionary
      * 
-     * @param key of object to be inserted
+     * @param key     of object to be inserted
      * @param element to be inserted
      */
     public void insertElement(Object key, Object element) {
-        if(!treeComp.isComparable(key)) {
+        if (!treeComp.isComparable(key)) {
             throw new InvalidIntegerException("Key is of wrong type");
         }
-        
+
         /* check if the tree is empty */
-        if(size == 0) {
+        if (size == 0) {
             treeRoot = new TFNode();
             treeRoot.addItem(0, new Item(key, element));
         }
@@ -293,7 +301,7 @@ public class TwoFourTree implements Dictionary {
      */
     public Object removeElement(Object key) throws ElementNotFoundException {
         /* Check for a comparable key */
-        if(!treeComp.isComparable(key)) {
+        if (!treeComp.isComparable(key)) {
             throw new InvalidIntegerException("Key is of wrong type");
         }
 
@@ -392,9 +400,9 @@ public class TwoFourTree implements Dictionary {
             if (out != i) {
                 throw new TwoFourTreeException("main: wrong element removed");
             }
-            //if (i > TEST_SIZE - 15) {
-            //    myTree.printAllElements();
-            //}
+            // if (i > TEST_SIZE - 15) {
+            // myTree.printAllElements();
+            // }
             myTree.checkTree();
             System.out.println(out);
         }
