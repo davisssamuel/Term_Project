@@ -79,7 +79,7 @@ public class TwoFourTree implements Dictionary {
      */
     private TFNode search(TFNode node, Object key) {
         int index = findFirst(node, key);
-        if (node.getChild(index) == null) { // could we add || node.getItem(index).key() == key so we could use search for remove element
+        if (node.getChild(index) == null) { // || node.getItem(index).key() == key so we could use search for remove element
             return node;
         }
         return search(node.getChild(index), key);
@@ -291,10 +291,6 @@ public class TwoFourTree implements Dictionary {
             // check for overflow
             overflow(node);
         }
-
-        // we forgot to increment size
-
-        // increment size
         size++;
     }
 
@@ -321,7 +317,7 @@ public class TwoFourTree implements Dictionary {
         // Find the node and index
         TFNode node = root();
         int index = -1;
-        while (node != null) {
+        while (node != null) { // changed from using search because search only returns leaf nodes
             index = findFirst(node, key);
             if (treeComp.isEqual(node.getItem(index).key(), key)) {
                 break;
@@ -331,28 +327,6 @@ public class TwoFourTree implements Dictionary {
         if (node == null) {
             throw new ElementNotFoundException("ERROR: No such item in tree");
         }
-
-        // Changed the above again, the search function won't work because it gives only
-        // leaf nodes. I basically copied our code from findElement()
-
-        // TFNode node = search(root(), key); // returns leaf, elements we are looking for may not always be at a leaf
-        // int index = -1;
-        // boolean keyFound = false;
-
-        //for (int i = 0; i < node.getNumItems(); i++) {
-        //    if (node.getItem(i).key() == key) {
-        //        index = i;
-        //        break;
-        //    }
-        //}
-
-        // check that an item was found
-        // changed this because if the item is found the index should be changed
-        // removes the need to declare a new boolean variable
-        
-        //if (index == -1) {
-        //    throw new ElementNotFoundException("ERROR: No such item in tree");
-        //}
 
         // Checks for external node
         Item removed;
