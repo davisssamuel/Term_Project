@@ -353,6 +353,7 @@ public class TwoFourTree implements Dictionary {
     public static void main(String[] args) {
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
+        
         final int TEST_SIZE = 10000;
 
         // Integer myInt1 = new Integer(47);
