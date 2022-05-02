@@ -71,6 +71,7 @@ public class TwoFourTree implements Dictionary {
         return i;
     }
 
+    
     /**
      * Searches for the node where the key belongs
      * 
@@ -80,7 +81,7 @@ public class TwoFourTree implements Dictionary {
      */
     private TFNode search(TFNode node, Object key) {
         int index = findFirst(node, key);
-        if (node.getChild(index) == null) {
+        if (node.getChild(index) == null) { // || node.getItem(index).key() == key so we could use search for remove element
             return node;
         }
         return search(node.getChild(index), key);
@@ -110,17 +111,18 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         newNode.setParent(node.getParent());
 
-        // set children's parents if children exist 
-        if(node.getChild(0) != null) {
-            newNode.setChild(0, node.getChild(3));
-            newNode.getChild(0).setParent(newNode);
+        // set children's parents if children exist
+        if (node.getChild(0) != null) {
             newNode.setChild(1, node.getChild(4));
             newNode.getChild(1).setParent(newNode);
+            newNode.setChild(0, node.getChild(3));
+            newNode.getChild(0).setParent(newNode);
         }
-        node.deleteItem(3); // changed from remove to delete
+        
+        newNode.addItem(0, node.getItem(3)); // changed to addItem so that children are not shifted
+        node.deleteItem(3); // changed from removeItem to deleteItem
 
         int whatChild = whatChild(node);
-
         parent.insertItem(whatChild, node.getItem(2));
         parent.setChild(whatChild + 1, newNode);
         node.deleteItem(2); // changed from remove to delete
@@ -208,6 +210,7 @@ public class TwoFourTree implements Dictionary {
         }
     }
 
+
     /**
      * Corrects underflow within the tree using transfers and fusions
      * 
@@ -233,12 +236,13 @@ public class TwoFourTree implements Dictionary {
             rightTransfer(node, whatChild);
         } else if (whatChild > 0) {
             leftFusion(node, whatChild);
-            underflow(node.getParent());
+            underflow(node.getParent()); // check for potential underflow on parent node
         } else {
             rightFusion(node, whatChild);
-            underflow(node.getParent());
+            underflow(node.getParent()); //  check for potential underflow on parent node
         }
     }
+
 
     /**
      * Searches dictionary to determine if key is present
@@ -246,7 +250,7 @@ public class TwoFourTree implements Dictionary {
      * @param key to be searched for
      * @return object corresponding to key; null if not found
      */
-    public Object findElement(Object key) throws InvalidIntegerException {
+    public Object findElement(Object key) {
         
         if (!treeComp.isComparable(key)) {
             throw new InvalidIntegerException("Key is of wrong type");
@@ -263,13 +267,14 @@ public class TwoFourTree implements Dictionary {
         return null;
     }
 
+
     /**
      * Inserts provided element into the Dictionary
      * 
      * @param key of object to be inserted
      * @param element to be inserted
      */
-    public void insertElement(Object key, Object element) throws InvalidIntegerException {
+    public void insertElement(Object key, Object element) {
         if (!treeComp.isComparable(key)) {
             throw new InvalidIntegerException("Key is of wrong type");
         }
@@ -288,12 +293,9 @@ public class TwoFourTree implements Dictionary {
             // check for overflow
             overflow(node);
         }
-
-        // we forgot to increment size
-
-        // increment size
         size++;
     }
+
 
     /**
      * Searches dictionary to determine if key is present, then
@@ -317,7 +319,7 @@ public class TwoFourTree implements Dictionary {
         // Find the node and index
         TFNode node = root();
         int index = -1;
-        while (node != null) {
+        while (node != null) { // changed from using search because search only returns leaf nodes
             index = findFirst(node, key);
             if (treeComp.isEqual(node.getItem(index).key(), key)) {
                 break;
@@ -327,41 +329,6 @@ public class TwoFourTree implements Dictionary {
         if (node == null) {
             throw new ElementNotFoundException("ERROR: No such item in tree");
         }
-
-        // Changed the above again, the search function won't work because it gives only
-        // leaf nodes. I basically copied our code from findElement()
-
-        // TFNode node = search(root(), key); // returns leaf, won't work
-        // int index = -1;
-        // boolean keyFound = false;
-
-        //for (int i = 0; i < node.getNumItems(); i++) {
-        //    if (node.getItem(i).key() == key) {
-        //        index = i;
-        //        break;
-        //    }
-        //}
-
-        // check that an item was found
-        // changed this because if the item is found the index should be changed
-        // removes the need to declare a new boolean variable
-        
-        //if (index == -1) {
-        //    throw new ElementNotFoundException("ERROR: No such item in tree");
-        //}
-
-        // for (int i = 0; i < removePoint.getNumItems(); i++) {
-        //     if (key == removePoint.getItem(i).key()) {
-        //         keyFound = true;
-        //         index = i;
-        //         break;
-        //     }
-        // }
-
-        // // Confirm that an item was found
-        // if (!keyFound) {
-        //     throw new ElementNotFoundException("ERROR: No such element in tree");
-        // }
 
         // Checks for external node
         Item removed;
@@ -386,82 +353,91 @@ public class TwoFourTree implements Dictionary {
     public static void main(String[] args) {
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
-
-        Integer myInt1 = 47;
-        myTree.insertElement(myInt1, myInt1);
-        Integer myInt2 = 83;
-        myTree.insertElement(myInt2, myInt2);
-        Integer myInt3 = 22;
-        myTree.insertElement(myInt3, myInt3);
-        Integer myInt4 = 16;
-        myTree.insertElement(myInt4, myInt4);
-        Integer myInt5 = 49;
-        myTree.insertElement(myInt5, myInt5);
-        Integer myInt6 = 100;
-        myTree.insertElement(myInt6, myInt6);
-        Integer myInt7 = 38;
-        myTree.insertElement(myInt7, myInt7);
-        Integer myInt8 = 3;
-        myTree.insertElement(myInt8, myInt8);
-        Integer myInt9 = 53;
-        myTree.insertElement(myInt9, myInt9);
-        Integer myInt10 = 66;
-        myTree.insertElement(myInt10, myInt10);
-        Integer myInt11 = 19;
-        myTree.insertElement(myInt11, myInt11);
-        Integer myInt12 = 23;
-        myTree.insertElement(myInt12, myInt12);
-        Integer myInt13 = 24;
-        myTree.insertElement(myInt13, myInt13);
-        Integer myInt14 = 88;
-        myTree.insertElement(myInt14, myInt14);
-        Integer myInt15 = 1;
-        myTree.insertElement(myInt15, myInt15);
-        Integer myInt16 = 97;
-        myTree.insertElement(myInt16, myInt16);
-        Integer myInt17 = 94;
-        myTree.insertElement(myInt17, myInt17);
-        Integer myInt18 = 35;
-        myTree.insertElement(myInt18, myInt18);
-        Integer myInt19 = 51;
-        myTree.insertElement(myInt19, myInt19);
-        myTree.printAllElements();
-        System.out.println("done");
-
-        myTree = new TwoFourTree(myComp);
         final int TEST_SIZE = 10000;
 
+        // Integer myInt1 = new Integer(47);
+        // myTree.insertElement(myInt1, myInt1);
+
+        // Integer myInt2 = new Integer(83);
+        // myTree.insertElement(myInt2, myInt2);
+
+        // Integer myInt3 = new Integer(22);
+        // myTree.insertElement(myInt3, myInt3);
+
+        // Integer myInt4 = new Integer(16);
+        // myTree.insertElement(myInt4, myInt4);
+
+        // Integer myInt5 = new Integer(49);
+        // myTree.insertElement(myInt5, myInt5);
+
+        // Integer myInt6 = new Integer(100);
+        // myTree.insertElement(myInt6, myInt6);
+
+        // Integer myInt7 = new Integer(38);
+        // myTree.insertElement(myInt7, myInt7);
+
+        // Integer myInt8 = new Integer(3);
+        // myTree.insertElement(myInt8, myInt8);
+
+        // Integer myInt9 = new Integer(53);
+        // myTree.insertElement(myInt9, myInt9);
+
+        // Integer myInt10 = new Integer(66);
+        // myTree.insertElement(myInt10, myInt10);
+
+        // Integer myInt11 = new Integer(19);
+        // myTree.insertElement(myInt11, myInt11);
+
+        // Integer myInt12 = new Integer(23);
+        // myTree.insertElement(myInt12, myInt12);
+
+        // Integer myInt13 = new Integer(24);
+        // myTree.insertElement(myInt13, myInt13);
+
+        // Integer myInt14 = new Integer(88);
+        // myTree.insertElement(myInt14, myInt14);
+
+        // Integer myInt15 = new Integer(1);
+        // myTree.insertElement(myInt15, myInt15);
+
+        // Integer myInt16 = new Integer(97);
+        // myTree.insertElement(myInt16, myInt16);
+
+        // Integer myInt17 = new Integer(94);
+        // myTree.insertElement(myInt17, myInt17);
+
+        // Integer myInt18 = new Integer(35);
+        // myTree.insertElement(myInt18, myInt18);
+
+        // Integer myInt19 = new Integer(51);
+        // myTree.insertElement(myInt19, myInt19);
+
+        // myTree.printAllElements();
+        // System.out.println("done");
+
+        // myTree = new TwoFourTree(myComp);
+        // final int TEST_SIZE = 10000;
+
+        // for (int i = 0; i < TEST_SIZE; i++) {
+        //     myTree.insertElement(new Integer(i), new Integer(i));
+        //     // myTree.printAllElements();
+        //     // myTree.checkTree();
+        // }
+
+        // Insert and check tree with random numbers
+        Random randNum = new Random();
+        int elementArray[] = new int[TEST_SIZE];
         for (int i = 0; i < TEST_SIZE; i++) {
-            myTree.insertElement(i, i); // Changed from Integer()
+            elementArray[i] = randNum.nextInt(TEST_SIZE);
+            myTree.insertElement(elementArray[i], elementArray[i]);
             // myTree.printAllElements();
             myTree.checkTree();
         }
+
         System.out.println("removing");
         for (int i = 0; i < TEST_SIZE; i++) {
             int out = (Integer) myTree.removeElement(i); // Changed from Integer()
             if (out != i) {
-                throw new TwoFourTreeException("main: wrong element removed");
-            }
-            if (i > TEST_SIZE - 15) {
-                myTree.printAllElements();
-            }
-            myTree.checkTree();
-        }
-        System.out.println("done");
-
-        //This is the random number testing that I added
-        Random randomNumGenerator = new Random();
-        int allNums[] = new int[10000];
-        for (int i = 0; i < TEST_SIZE; i ++) {
-            allNums[i] = randomNumGenerator.nextInt(10000);
-            myTree.insertElement(allNums[i], allNums[i]);
-            //myTree.printAllElements();
-            myTree.checkTree();
-        }
-        System.out.println("Removing random numbers.");
-        for (int i = 0; i < TEST_SIZE; i++) {
-            int out = (Integer) myTree.removeElement(allNums[i]); // Changed from Integer()
-            if (out != allNums[i]) {
                 throw new TwoFourTreeException("main: wrong element removed");
             }
             if (i > TEST_SIZE - 15) {
