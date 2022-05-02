@@ -62,7 +62,7 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = child.getParent();
         int i;
         for (i = 0; i <= parent.getNumItems(); i++) {
-            if (parent.getChild(i) == child) { // changed to not use treeComp
+            if (parent.getChild(i) == child) {
                 break;
             }
         }
@@ -93,15 +93,15 @@ public class TwoFourTree implements Dictionary {
      */
     private void overflow(TFNode node) {
 
-        // guard clause for when a node is not overflowed
+        /* guard clause for when a node is not overflowed */
         if (node.getNumItems() != 4) {
             return;
         }
 
-        // correct root node overflow
+        /* correct root node overflow */
         if (node == treeRoot) {
             node.setParent(new TFNode());
-            setRoot(node.getParent()); // changed to use setRoot() method provided
+            setRoot(node.getParent());
             treeRoot.setChild(0, node);
         }
 
@@ -109,7 +109,7 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         newNode.setParent(node.getParent());
 
-        // set children's parents if children exist
+        /* set children's parents if children exist */
         if (node.getChild(0) != null) {
             newNode.setChild(1, node.getChild(4));
             newNode.getChild(1).setParent(newNode);
@@ -117,28 +117,28 @@ public class TwoFourTree implements Dictionary {
             newNode.getChild(0).setParent(newNode);
         }
         
-        newNode.addItem(0, node.getItem(3)); // changed to addItem so that children are not shifted
-        node.deleteItem(3); // changed from removeItem to deleteItem
-
+        newNode.addItem(0, node.getItem(3));
+        node.deleteItem(3);
+        
         int whatChild = whatChild(node);
         parent.insertItem(whatChild, node.getItem(2));
         parent.setChild(whatChild + 1, newNode);
-        node.deleteItem(2); // changed from remove to delete
+        node.deleteItem(2);
 
-        overflow(node.getParent()); // check if parent node has been overflowed
+        /* check if parent node has been overflowed */
+        overflow(node.getParent());
     }
     
 
     private TFNode indorderSuccr(TFNode parent, int index) {
 
-        // initialize the node that will be returned to parent
         TFNode retNode = parent;
 
-        // if the child to the right of the key is not null set it as the return node
+        /* if the child to the right of the key is not null set it as the return node */
         if (retNode.getChild(index) != null) {
             retNode = retNode.getChild(index);
 
-            // set the return node to the left child until the left child is null
+            /* set the return node to the left child until the left child is null */ 
             while (parent.getChild(0) != null) {
                 retNode = retNode.getChild(0);
             }
@@ -152,19 +152,20 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         TFNode leftSib = parent.getChild(index - 1);
 
-        // handle kids
+        /* handle kids */
         node.setChild(1, node.getChild(0)); /* left child must be shifted */
         node.setChild(0, leftSib.getChild(leftSib.getNumItems()));
-        if(node.getChild(0) != null) { /* added null check */
+        
+        if(node.getChild(0) != null) {
             node.getChild(0).setParent(node);
         }
         // leftSib.getChild(leftSib.getNumItems()).setParent(node);
         // leftSib.setChild(leftSib.getNumItems(), null);
 
-        // move greatest value from left sibling to parent node
-        // and the least value from the parent node to the current node
-        node.addItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1))); /* added - 1, changed to addItem */
-        leftSib.removeItem(leftSib.getNumItems() - 1); /* added - 1 */
+        /* move greatest value from left sibling to parent node
+        and the least value from the parent node to the current node */
+        node.addItem(0, parent.replaceItem(index - 1, leftSib.getItem(leftSib.getNumItems() - 1)));
+        leftSib.removeItem(leftSib.getNumItems() - 1);
     }
 
     private void rightTransfer(TFNode node, int index) {
@@ -172,15 +173,16 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         TFNode rightSib = parent.getChild(index + 1);
 
-        // handle kids
+        /* handle kids */
         node.setChild(1, rightSib.getChild(0));
-        if(node.getChild(0) != null) { /* added null check */
+        
+        if(node.getChild(0) != null) {
             node.getChild(1).setParent(node);
         }
 
-        // move least value from right sibling to parent node
-        // and the greatest value from the parent node to the current node
-        node.addItem(0, parent.replaceItem(index, rightSib.getItem(0))); /* changed to addItem */
+        /* move least value from right sibling to parent node
+        and the greatest value from the parent node to the current node */
+        node.addItem(0, parent.replaceItem(index, rightSib.getItem(0)));
         rightSib.removeItem(0);
     }
 
@@ -188,7 +190,7 @@ public class TwoFourTree implements Dictionary {
         TFNode parent = node.getParent();
         TFNode leftSib = parent.getChild(index - 1);
         Item borrow = parent.removeItem(index - 1);
-        leftSib.addItem(1, borrow); /* changed to index 1  from leftSib.getNumItems() - 1 */
+        leftSib.addItem(1, borrow);
         leftSib.setChild(2, node.getChild(0));
         if(leftSib.getChild(0) != null) {
             leftSib.getChild(2).setParent(leftSib);
@@ -216,14 +218,14 @@ public class TwoFourTree implements Dictionary {
      */
     private void underflow(TFNode node) {
 
-        // guard clause for when a node is not underflowed
+        /* guard clause for when a node is not underflowed */
         if (node.getNumItems() > 0) {
             return;
         }
         
-        // handle underflow at root
+        /* handle underflow at root */
         if (node == treeRoot) {
-            setRoot(node.getChild(0)); // changed to use setRoot() method provided
+            setRoot(node.getChild(0));
             return;
         }
 
@@ -234,10 +236,10 @@ public class TwoFourTree implements Dictionary {
             rightTransfer(node, whatChild);
         } else if (whatChild > 0) {
             leftFusion(node, whatChild);
-            underflow(node.getParent()); // check for potential underflow on parent node
+            underflow(node.getParent()); /* check for potential underflow on parent node */
         } else {
             rightFusion(node, whatChild);
-            underflow(node.getParent()); //  check for potential underflow on parent node
+            underflow(node.getParent()); /* check for potential underflow on parent node */
         }
     }
 
@@ -260,7 +262,7 @@ public class TwoFourTree implements Dictionary {
             if (treeComp.isEqual(node.getItem(index).key(), key)) {
                 return node.getItem(index).element();
             }
-            node = node.getChild(index); // set equal to correct child
+            node = node.getChild(index); /* set equal to correct child */
         }
         return null;
     }
@@ -277,18 +279,17 @@ public class TwoFourTree implements Dictionary {
             throw new InvalidIntegerException("Key is of wrong type");
         }
         
-        // first, check to see if the tree is empty
+        /* check if the tree is empty */
         if (size == 0) {
             setRoot(new TFNode()); // changed to use setRoot() method provided
             treeRoot.addItem(0, new Item(key, element));
         }
 
-        // search for the correct node, find the right index, and insert the item
+        /* find the correct node and index and insert */
         else {
             TFNode node = search(root(), key);
             int index = findFirst(node, key);
             node.insertItem(index, new Item(key, element));
-            // check for overflow
             overflow(node);
         }
         size++;
@@ -309,33 +310,30 @@ public class TwoFourTree implements Dictionary {
             throw new InvalidIntegerException("Key is of wrong type");
         }
 
-        // Checks for empty tree
+        /* check if the tree is empty */ 
         if (size == 0) {
-            throw new ElementNotFoundException("ERROR: Tree is empty");
+            throw new ElementNotFoundException("Tree is empty");
         }
 
-        // Find the node and index
+        /* find the correct node and index */
         TFNode node = root();
         int index = -1;
-        while (node != null) { // changed from using search because search only returns leaf nodes
+        while (node != null) {
             index = findFirst(node, key);
             if (treeComp.isEqual(node.getItem(index).key(), key)) {
                 break;
             }
-            node = node.getChild(index); // set equal to correct child
+            node = node.getChild(index); /* set equal to correct child */
         }
         if (node == null) {
-            throw new ElementNotFoundException("ERROR: No such item in tree");
+            throw new ElementNotFoundException("No such item in tree");
         }
 
-        // Checks for external node
+        /* check if the node is external */
         Item removed;
         if (node.getChild(0) == null) {
             removed = node.removeItem(index);
-        }
-
-        // Otherwise, the node is internal
-        else {
+        } else {
             TFNode successorNode = indorderSuccr(node, index);
             Item successorItem = successorNode.removeItem(0);
             removed = node.getItem(index);
@@ -343,10 +341,11 @@ public class TwoFourTree implements Dictionary {
             node = successorNode;
         }
 
-        // Check for underflow and return the removed item element
+        /* check for underflow and return the removed element */
         underflow(node);
         return removed.element();
     }
+
 
     public static void main(String[] args) {
         Comparator myComp = new IntegerComparator();
