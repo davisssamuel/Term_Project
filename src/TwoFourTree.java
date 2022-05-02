@@ -1,3 +1,5 @@
+import java.util.Random;
+
 // package termproject;
 
 /**
@@ -438,6 +440,28 @@ public class TwoFourTree implements Dictionary {
         for (int i = 0; i < TEST_SIZE; i++) {
             int out = (Integer) myTree.removeElement(i); // Changed from Integer()
             if (out != i) {
+                throw new TwoFourTreeException("main: wrong element removed");
+            }
+            if (i > TEST_SIZE - 15) {
+                myTree.printAllElements();
+            }
+            myTree.checkTree();
+        }
+        System.out.println("done");
+
+        //This is the random number testing that I added
+        Random randomNumGenerator = new Random();
+        int allNums[] = new int[10000];
+        for (int i = 0; i < TEST_SIZE; i ++) {
+            allNums[i] = randomNumGenerator.nextInt(10000);
+            myTree.insertElement(allNums[i], allNums[i]);
+            //myTree.printAllElements();
+            myTree.checkTree();
+        }
+        System.out.println("Removing random numbers.");
+        for (int i = 0; i < TEST_SIZE; i++) {
+            int out = (Integer) myTree.removeElement(allNums[i]); // Changed from Integer()
+            if (out != allNums[i]) {
                 throw new TwoFourTreeException("main: wrong element removed");
             }
             if (i > TEST_SIZE - 15) {
