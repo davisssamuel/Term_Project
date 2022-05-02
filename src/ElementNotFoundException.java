@@ -1,5 +1,3 @@
-// package termproject;
-
 /**
  * Title:        Term Project 2-4 Trees
  * Description:

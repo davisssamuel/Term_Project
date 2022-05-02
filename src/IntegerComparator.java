@@ -1,5 +1,3 @@
-// package termproject;
-
 /**
  * Title:        Project #7
  * Description:

@@ -1,5 +1,3 @@
-// package termproject;
-
 /**
  * Basic storage element for the 2-4 Tree
  *
